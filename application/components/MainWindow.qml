@@ -103,12 +103,15 @@ Item {
         border.width: 2
 
         layer.enabled: true
-        layer.effect: DropShadow {
-            radius: shadowSize
-            samples: shadowSize * 2 + 1
-            horizontalOffset: 0
-            verticalOffset: shadowOffset
-            color: Qt.rgba(0, 0, 0, 0.7)
+        layer.effect: ShaderEffect {
+            property color color: Qt.rgba(1,0,0,1)
+
+            property real spread: 1 //No idea what any of these do
+            property real dirstep: 1
+            property real thickness: 1
+
+            vertexShader: "qrc:/assets/shaders/shadow.vert"
+            fragmentShader: "qrc:/assets/shaders/shadow.frag"
         }
     }
 

@@ -111,5 +111,7 @@
         <file>assets/icons/qFlipper.icns</file>
         <file>assets/icons/qFlipper.ico</file>
         <file>assets/icons/qFlipper.png</file>
+        <file>assets/shaders/shadow.frag</file>
+        <file>assets/shaders/shadow.vert</file>
     </qresource>
 </RCC>
