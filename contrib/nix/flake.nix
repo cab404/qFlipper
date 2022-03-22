@@ -8,7 +8,10 @@
     pkgs = import nixpkgs { inherit system; };
     in
     {
-      defaultPackage = pkgs.libsForQt515.callPackage ./. { };
+      defaultPackage = pkgs.libsForQt515.callPackage ./. {
+        timestamp = self.sourceInfo.lastModified;
+        commit = self.sourceInfo.shortRev or "local";
+      };
       nixpkgs = pkgs;
     });
 

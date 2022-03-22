@@ -19,11 +19,11 @@
 , qtquickcontrols2
 , qtgraphicaleffects
 , qtwayland
+, timestamp
+, commit
 }:
 let
-  version = "0.8.2";
-  timestamp = "99999999999";
-  commit = "nix-${version}";
+  version = commit;
   udev_rules = ''
     #Flipper Zero serial port
     SUBSYSTEMS=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", ATTRS{manufacturer}=="Flipper Devices Inc.", TAG+="uaccess"
@@ -63,31 +63,24 @@ mkDerivation {
 
   qmakeFlags = [
     "DEFINES+=DISABLE_APPLICATION_UPDATES"
+    "CONFIG+=qtquickcompiler"
   ];
 
   preBuild = ''
     substituteInPlace qflipper_common.pri \
-        --replace 'GIT_VERSION = unknown' 'GIT_VERSION = "${version}"' \
-        --replace 'GIT_TIMESTAMP = 0' 'GIT_TIMESTAMP = ${timestamp}' \
-        --replace 'GIT_COMMIT = unknown' 'GIT_COMMIT = "${commit}"'
+        --replace 'GIT_VERSION = unknown' 'GIT_VERSION = "${toString version}"' \
+        --replace 'GIT_TIMESTAMP = 0' 'GIT_TIMESTAMP = ${toString timestamp}' \
+        --replace 'GIT_COMMIT = unknown' 'GIT_COMMIT = "${toString commit}"'
   '';
 
   installPhase = ''
+    make install
+
     mkdir -p $out/bin
-  '' + (
-    if stdenv.isLinux then ''
-      cp qFlipper $out/bin
-    '' else ''
-      cp qFlipper.app/Contents/MacOS/qFlipper $out/bin
-    ''
-  ) + ''
-    cp qFlipperTool $out/bin
-
-    mkdir -p $out/share/applications
-    cp installer-assets/appimage/qFlipper.desktop $out/share/applications
-
-    mkdir -p $out/share/icons
-    cp application/assets/icons/qFlipper.png $out/share/icons
+    ${lib.optionalString stdenv.isDarwin ''
+    cp qFlipper.app/Contents/MacOS/qFlipper $out/bin
+    ''}
+    cp qFlipper-cli $out/bin
 
     mkdir -p $out/etc/udev/rules.d
     tee $out/etc/udev/rules.d/42-flipperzero.rules << EOF
